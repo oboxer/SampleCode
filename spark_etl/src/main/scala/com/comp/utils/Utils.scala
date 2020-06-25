@@ -131,15 +131,17 @@ object Utils {
     val comp = runQuery(conn, "companies", "company_id")
     val cust = runQuery(conn, "customers", "customer_id")
     val prod = runQuery(conn, "products", "prod_id")
-    val lead = runQuery(conn, "orders", "crm_lead_Id")
+    val leadSql = "select min(crm_lead_Id), max(crm_lead_Id) from orders where crm_lead_Id != -1;"
+    val lead = runQuery(conn, "orders", "crm_lead_Id", leadSql)
     val order = runQuery(conn, "orders", "order_id")
 
     MinMaxRange(prod._1.toInt, prod._2.toInt, order._1, order._2, comp._1, comp._2, cust._1, cust._2, lead._1, lead._2)
   }
 
-  private def runQuery(conn: Connection, tbl: String, sqlKey: String): (Long, Long) = {
+  private def runQuery(conn: Connection, tbl: String, sqlKey: String, sql: String = ""): (Long, Long) = {
     val stmt = conn.createStatement()
-    val resultSet = stmt.executeQuery(s"select min($sqlKey), max($sqlKey) from $tbl;")
+    val sqlStmt = if (sql.isEmpty) s"select min($sqlKey), max($sqlKey) from $tbl;" else sql
+    val resultSet = stmt.executeQuery(sqlStmt)
     val res = new Iterator[(Long, Long)] {
       def hasNext: Boolean = resultSet.next()
       def next(): (Long, Long) = (resultSet.getLong(1), resultSet.getLong(2))
