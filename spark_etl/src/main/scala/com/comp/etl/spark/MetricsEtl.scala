@@ -123,11 +123,12 @@ object MetricsEtl {
 
     val companyDF = spark.read.parquet(s3SnapShotpath + "companies/" + params.yesterdayDateStr)
     val customerDF = spark.read.parquet(s3SnapShotpath + "customers/" + params.yesterdayDateStr)
+    val productDF = spark.read.parquet(s3SnapShotpath + "products/" + params.yesterdayDateStr)
     val orderDF = spark.read.parquet(s3SnapShotpath + "orders/" + params.yesterdayDateStr)
-    val productDF =
-      spark.read.parquet(s3SnapShotpath + "products/" + params.yesterdayDateStr)
+    val webLogsDF = spark.read.parquet(s3SnapShotpath + "weblogs/" + params.yesterdayDateStr)
 
     val parsedWebLogDF = WeblogEtl.trans(spark.read.option("mode", "DROPMALFORMED").text(s"$s3RawDataPath/weblogs.log"))
+    val updatedWebLogsDF = webLogsDF.unionByName(parsedWebLogDF)
 
     val updatedOrdersDF = CombineOrdersEtl.trans(spark, s3RawDataPath, orderDF)
 
@@ -136,7 +137,7 @@ object MetricsEtl {
       customerDF.persist(),
       updatedOrdersDF.persist(),
       productDF.persist(),
-      parsedWebLogDF.persist(),
+      updatedWebLogsDF.persist(),
     )
   }
 }
