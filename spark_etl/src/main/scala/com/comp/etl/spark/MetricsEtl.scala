@@ -4,7 +4,7 @@ import java.util.{Date, TimeZone}
 
 import com.comp.etl.mock.database.model._
 import com.comp.etl.spark.calculation._
-import com.comp.etl.spark.out.ParquetOut
+import com.comp.etl.spark.out.FileOut
 import com.comp.etl.spark.transform.{CombineOrdersEtl, WeblogEtl}
 import com.comp.utils.ArgsHelper
 import com.comp.utils.ArgsHelper.AddOptions
@@ -38,7 +38,7 @@ object MetricsEtl {
     allDFs
       .getPaths(date)
       .filterNot(_._2.isEmpty)
-      .foreach(path_df => ParquetOut.fileOut(path_df._2, path_df._1))
+      .foreach(path_df => FileOut.parquet(path_df._2, path_df._1))
 
     if (!params.isInitLoad) {
       // calculate metrics and save to S3
@@ -50,7 +50,7 @@ object MetricsEtl {
         ),
         (s"report=most_used_devices/$date", MostUsedDevicesByCustomers.cal(allDFs.parsedWebLogDF)),
         (s"report=total_leads/$date", TotalLeadByCustomers.cal(allDFs.updatedOrdersDF)),
-      ).foreach(path_df => ParquetOut.fileOut(path_df._2, path_df._1))
+      ).foreach(path_df => FileOut.csv(path_df._2, path_df._1))
     }
   }
 
