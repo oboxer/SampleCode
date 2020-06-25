@@ -1,0 +1,15 @@
+#mac
+.DS_Store
+
+#extensions to ignore
+*.log
+*.pot
+*.pyc
+
+#directories to ignore
+.idea/
+
+#airlfow related
+data
+logs
+jars
