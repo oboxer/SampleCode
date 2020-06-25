@@ -138,6 +138,33 @@ def drop_and_create_table(tbl_name: str):
     CON.cursor().execute(sql_stmt)
 
 
+def insert_new_data(tbl_name: str, s3_path: str):
+    sql_stmt = f'create temp table stage (like {tbl_name});'
+    CON.cursor().execute(sql_stmt)
+    copy_csv_to_tbl('stage', s3_path)
+    insert_sql = f'insert into {tbl_name} (select * from stage);'
+    CON.cursor().execute(insert_sql)
+    drop_sql = 'drop table stage;'
+    CON.cursor().execute(drop_sql)
+
+
+def update_data(tbl_name: str, s3_path: str):
+    sql_stmt = f'create temp table stage (like {tbl_name});'
+    CON.cursor().execute(sql_stmt)
+    copy_csv_to_tbl('stage', s3_path)
+    update_sql = f'''
+        update companies
+        set
+          company_id=s.company_id,
+          company_name=s.company_name
+        from
+          companies    c
+            join stage s on s.company_id = c.company_id;'''
+    CON.cursor().execute(update_sql)
+    drop_sql = 'drop table stage;'
+    CON.cursor().execute(drop_sql)
+
+
 def get_redshift_customer_user_names() -> [str]:
     cur = CON.cursor()
     cur.execute('select user_name from customers;')
