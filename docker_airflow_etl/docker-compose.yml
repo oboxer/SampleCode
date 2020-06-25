@@ -22,7 +22,6 @@ services:
       - postgres
 
   webserver:
-    #    image: puckel/docker-airflow:1.10.9
     build: .
     restart: always
     depends_on:
@@ -37,8 +36,6 @@ services:
       - ./dags:/usr/local/airflow/dags
       - ./jars:/usr/local/airflow/jars
       - ./logs:/usr/local/airflow/logs
-      - ./utils:/usr/local/airflow/utils
-      # - ./plugins:/usr/local/airflow/plugins
     ports:
       - "8080:8080"
     command: webserver
