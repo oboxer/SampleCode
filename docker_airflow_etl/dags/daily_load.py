@@ -17,7 +17,7 @@ S3_BUCKET_METRIC_PATH: str = 's3://com.comp.prod.data.etl/data/final/report='
 default_args: dict = {
     'owner': 'airflow',
     'depends_on_past': True,
-    'start_date': datetime(2020, 6, 21),
+    'start_date': datetime(2020, 6, 22),
     'retries': 3,
     'retry_delay': timedelta(minutes=10),
 }
