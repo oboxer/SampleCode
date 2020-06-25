@@ -3,6 +3,7 @@ package com.comp.etl.spark.calculation
 import com.comp.etl.spark.transform.CompanyCatalog
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.DecimalType
 
 object MonthlySales {
   def cal(ordersDF: DataFrame, productsDF: DataFrame): DataFrame = {
@@ -28,8 +29,8 @@ object MonthlySales {
   private def withTotalProfit(salesCatalogsDF: DataFrame): DataFrame = {
     val profit = col("total_sales") - (col("prod_unit_price") * col("total_units_sold"))
 
-    val totalProfit = round(sum("total_profit"), 2).as("monthly_profit")
-    val totalSales = round(sum("total_sales"), 2).as("monthly_sales")
+    val totalProfit = round(sum("total_profit"), 2).as("monthly_profit").cast(DecimalType(18, 2))
+    val totalSales = round(sum("total_sales"), 2).as("monthly_sales").cast(DecimalType(18, 2))
 
     salesCatalogsDF
       .withColumn("total_profit", profit)
