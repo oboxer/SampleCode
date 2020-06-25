@@ -22,13 +22,16 @@ libraryDependencies ++= Vector(
   "nl.basjes.parse.useragent"    % "yauaa"                 % "5.18",
   "com.maxmind.geoip2"           % "geoip2"                % "2.14.0" excludeAll (ExclusionRule(organization = "com.fasterxml.jackson.core")),
   "com.amazon.redshift"          % "redshift-jdbc42"       % "1.2.1.1001",
-  "org.apache.hadoop"            % "hadoop-aws"            % "2.6.5",
+  "org.apache.hadoop"            % "hadoop-aws"            % hadoopVersion,
+  "org.apache.hadoop"            % "hadoop-hdfs"           % hadoopVersion,
+  "org.apache.hadoop"            % "hadoop-client"         % hadoopVersion,
   "org.scalatest"                %% "scalatest"            % "3.1.2" % Test,
 )
 
 addSbtPlugin("com.artima.supersafe" % "sbtplugin" % "1.1.10")
 
 assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x                             => MergeStrategy.first
+  case PathList("META-INF", "services", xs @ _*) => MergeStrategy.filterDistinctLines
+  case PathList("META-INF", xs @ _*)             => MergeStrategy.discard
+  case x                                         => MergeStrategy.first
 }
