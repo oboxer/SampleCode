@@ -29,8 +29,8 @@ object MonthlySales {
   private def withTotalProfit(salesCatalogsDF: DataFrame): DataFrame = {
     val profit = col("total_sales") - (col("prod_unit_price") * col("total_units_sold"))
 
-    val totalProfit = round(sum("total_profit"), 2).as("monthly_profit").cast(DecimalType(18, 2))
-    val totalSales = round(sum("total_sales"), 2).as("monthly_sales").cast(DecimalType(18, 2))
+    val totalProfit = round(sum("total_profit"), 2).cast(DecimalType(18, 2)).as("monthly_profit")
+    val totalSales = round(sum("total_sales"), 2).cast(DecimalType(18, 2)).as("monthly_sales")
 
     salesCatalogsDF
       .withColumn("total_profit", profit)
