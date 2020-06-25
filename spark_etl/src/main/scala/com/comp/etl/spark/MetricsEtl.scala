@@ -109,10 +109,10 @@ object MetricsEtl {
       spark.read.schema(Product.INPUT_SCHEMA).csv(s3Path + DataBases.Products.toString.toLowerCase + ".csv")
 
     PreprocessDFs(
-      companyDF.persist(),
-      customerDF.persist(),
-      orderDF.persist(),
-      productDF.persist(),
+      companyDF,
+      customerDF,
+      orderDF,
+      productDF,
       spark.emptyDataFrame,
     )
   }
