@@ -34,14 +34,13 @@ object MockDataGeneration {
       val strs = generateData(params.isInitLoad, dbName, params.settings).mkString("\n")
       val outpath = getOutputPath(params.isInitLoad, dbName, params.s3Path, params.dateStr)
 
-      if (!strs.trim.isEmpty) {
-        params.s3Client.putObject(params.s3Bucket, outpath, strs)
-      }
+      if (!strs.trim.isEmpty) params.s3Client.putObject(params.s3Bucket, outpath, strs)
     }
   }
 
   private def setUpParams(args: Array[String]): Params = {
     val isInitOption = AddOptions("i", "init", "Is this init data load. EG: False")
+    val endRangeOption = AddOptions("e", "range_end", "How many records to mock")
     val dateOption = AddOptions("d", "date", "Process date; EG: 2020-06-20")
     val pathOption = AddOptions("p", "path", "S3 data output path")
     val s3BucketOption = AddOptions("s3b", "s3Bucket", "S3 bucket name")
@@ -55,6 +54,7 @@ object MockDataGeneration {
       args,
       Vector(
         isInitOption,
+        endRangeOption,
         dateOption,
         pathOption,
         s3BucketOption,
@@ -69,6 +69,7 @@ object MockDataGeneration {
     val formatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.UTC)
 
     val isInit = map(isInitOption.symbol).toBoolean
+    val endRange = map(endRangeOption.symbol).trim.toInt
     val dateStr = map(dateOption.symbol)
     val date = formatter.parseDateTime(dateStr).toDate
     val path = map(pathOption.symbol)
@@ -86,7 +87,7 @@ object MockDataGeneration {
       .build()
 
     val dataSettings = DataSettings(
-      rangeEnd = 5000,
+      rangeEnd = endRange,
       seed = date,
       minMax = if (isInit) MinMaxRange() else createMinMax(rsUrl, rsUN, rsPW),
     )
