@@ -1,8 +1,6 @@
 package com.comp.utils
 
-import java.io.File
 import java.net.InetAddress
-import java.sql.Date
 
 import com.maxmind.geoip2.DatabaseReader
 import com.maxmind.geoip2.exception.AddressNotFoundException
@@ -25,7 +23,7 @@ object WebLogUtils {
 
   private object ProcessIp {
     @transient
-    private lazy val db = new File(getClass.getResource("/maxmind/GeoLite2-Country.mmdb").toURI)
+    private lazy val db = getClass.getResourceAsStream("/maxmind/GeoLite2-Country.mmdb")
 
     @transient
     private lazy val dbReader = new DatabaseReader.Builder(db).build()
